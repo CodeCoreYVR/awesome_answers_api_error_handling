@@ -63,8 +63,8 @@ class Api::V1::QuestionsController < Api::ApplicationController
 
   def record_not_found
     render(
-      json: { status: 404, errors: {msg: 'Record Not Found'}},
-      status: 404
+      json: { status: 422, errors: {msg: 'Record Not Found'}},
+      status: 422
     )
   end
 
