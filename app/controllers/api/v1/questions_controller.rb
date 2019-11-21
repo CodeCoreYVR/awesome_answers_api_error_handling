@@ -70,7 +70,7 @@ class Api::V1::QuestionsController < Api::ApplicationController
 
   def record_invalid(error) 
     invalid_record = error.record 
-    errors = invalid_record.map do |field, message|
+    errors = invalid_record.errors.map do |field, message|
     {
       type: error.class.to_s, 
       record_type: invalid_record.class.to_s,
