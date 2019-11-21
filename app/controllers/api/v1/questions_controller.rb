@@ -2,6 +2,9 @@ class Api::V1::QuestionsController < Api::ApplicationController
   before_action :authenticate_user!, except: [:index, :show]
   before_action :find_question, only: [:show, :edit, :update, :destroy]
 
+  rescue_from(ActiveRecord:: RecordNotFound, with: :record_not_found)
+  rescue_from(ActiveRecord:: RecordInvalid, with: :record_invalid)
+
   def index
     questions = Question.order(created_at: :desc)
     render(json: questions, each_serializer: QuestionCollectionSerializer)
@@ -56,5 +59,27 @@ class Api::V1::QuestionsController < Api::ApplicationController
 
   def question_params
     params.require(:question).permit(:title, :body, :tag_names)
+  end
+
+  def record_not_found
+    render(
+      json: { status: 404, errors: {msg: 'Record Not Found'}},
+      status: 404
+    )
+  end
+
+  def record_invalid(error) 
+    invalid_record = error.record 
+    errors = invalid_record.map do |field, message|
+    {
+      type: error.class.to_s, 
+      record_type: invalid_record.class.to_s,
+      field: field,
+      message: message
+    }
+    end
+    render(
+      json: { status: 422, errors: errors }
+    )
   end
 end
